@@ -5,15 +5,15 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class Database:
+class Database:    
     client = None
     db = None
-
+    
     @classmethod
     async def connect_db(cls):
         """Connect to MongoDB database"""
         # First check if MongoDB URL is set in environment
-        mongo_uri = os.getenv("MONGODB_URL", "mongodb://localhost:27017")
+        mongo_uri = os.getenv("MONGODB_URL", "mongodb://mongodb:27017")
         db_name = os.getenv("DATABASE_NAME", "virtual_dietician")
         
         print(f"Connecting to MongoDB at: {mongo_uri}")

@@ -6,10 +6,10 @@ import pandas as pd
 import time
 
 # Service URLs
-USER_MANAGEMENT_URL = "http://localhost:8000/api/v1"
-DIET_REQUIREMENTS_URL = "http://localhost:8001/api/v1"
-FOOD_RECOMMENDATION_URL = "http://localhost:8002/api/v1"
-SPECIAL_NEEDS_URL = "http://localhost:8003/api/v1"
+USER_MANAGEMENT_URL = "http://user-management:8000/api/v1"
+DIET_REQUIREMENTS_URL = "http://diet-requirements:8001/api/v1"
+FOOD_RECOMMENDATION_URL = "http://food-recommendation:8002/api/v1"
+SPECIAL_NEEDS_URL = "http://special-needs:8003/api/v1"
 
 # Initialize session state
 if "user" not in st.session_state:
@@ -121,20 +121,54 @@ def update_profile(profile_data):
 # Diet Requirements functions
 def generate_diet_requirements():
     if not st.session_state.token:
+        st.error("You must be logged in to generate diet requirements")
         return None
     
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
     
     try:
         with st.spinner("Generating diet requirements..."):
-            response = requests.post(
-                f"{DIET_REQUIREMENTS_URL}/diet-requirements",
+            # First, verify that the token is still valid by making a simple request
+            verify_response = requests.get(
+                f"{USER_MANAGEMENT_URL}/users/me",
                 headers=headers
             )
+            
+            if verify_response.status_code != 200:
+                # Token is invalid, need to re-login
+                st.error("Your session has expired. Please log in again.")
+                st.session_state.token = None
+                st.session_state.user = None
+                time.sleep(1)
+                st.experimental_rerun()
+                return None
+            
+            # Get user data to send to the service
+            user_data = st.session_state.user
+            
+            # Call the diet requirements service directly
+            response = requests.post(
+                f"{DIET_REQUIREMENTS_URL}/diet-requirements",
+                json={"user_data": user_data},
+                headers=headers
+            )
+            
             if response.status_code == 201:
                 return response.json()
+            elif response.status_code == 401:
+                st.error("Authentication failed. Please log in again.")
+                st.session_state.token = None
+                st.session_state.user = None
+                time.sleep(1)
+                st.experimental_rerun()
+                return None
             else:
-                st.error(f"Error: {response.json()['detail']}")
+                error_detail = "Unknown error"
+                try:
+                    error_detail = response.json().get('detail', 'Unknown error')
+                except:
+                    pass
+                st.error(f"Error: {error_detail}, Response code: {response.status_code}")
                 return None
     except Exception as e:
         st.error(f"Error: {str(e)}")
@@ -147,8 +181,12 @@ def get_latest_diet_requirements():
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
     
     try:
+        # Get user_id from the user object
+        user_id = st.session_state.user["id"]
+        
+        # Call the diet requirements service directly
         response = requests.get(
-            f"{DIET_REQUIREMENTS_URL}/diet-requirements/latest",
+            f"{DIET_REQUIREMENTS_URL}/diet-requirements/user/{user_id}/latest",
             headers=headers
         )
         if response.status_code == 200:
@@ -164,28 +202,33 @@ def generate_food_recommendation(diet_requirement_id, food_availability=None, me
         return None
     
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
+    user_id = st.session_state.user["id"]
+    user_data = st.session_state.user
     
-    data = {
+    # Prepare request data
+    request_data = {
+        "user_data": user_data,
         "diet_requirement_id": diet_requirement_id
     }
     
     if food_availability:
-        data["food_availability"] = food_availability
+        request_data["food_availability"] = food_availability
     
     if meal_preferences:
-        data["meal_preferences"] = meal_preferences
+        request_data["meal_preferences"] = meal_preferences
     
     try:
         with st.spinner("Generating meal recommendations..."):
+            # Call the food recommendation service directly
             response = requests.post(
-                f"{FOOD_RECOMMENDATION_URL}/food-recommendations",
-                json=data,
+                f"{FOOD_RECOMMENDATION_URL}/food-recommendation",
+                json=request_data,
                 headers=headers
             )
-            if response.status_code == 201:
+            if response.status_code == 200:
                 return response.json()
             else:
-                st.error(f"Error: {response.json()['detail']}")
+                st.error(f"Error: {response.json().get('detail', 'Unknown error')}")
                 return None
     except Exception as e:
         st.error(f"Error: {str(e)}")
@@ -196,10 +239,12 @@ def get_latest_food_recommendation():
         return None
     
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
+    user_id = st.session_state.user["id"]
     
     try:
+        # Call the food recommendation service directly
         response = requests.get(
-            f"{FOOD_RECOMMENDATION_URL}/food-recommendations/latest",
+            f"{FOOD_RECOMMENDATION_URL}/food-recommendation/user/{user_id}/latest",
             headers=headers
         )
         if response.status_code == 200:
@@ -215,8 +260,11 @@ def submit_feedback(food_recommendation_id, feedback_text, feedback_type):
         return None
     
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
+    user_id = st.session_state.user["id"]
+    user_data = st.session_state.user
     
     data = {
+        "user_data": user_data,
         "food_recommendation_id": food_recommendation_id,
         "feedback_text": feedback_text,
         "feedback_type": feedback_type
@@ -224,15 +272,16 @@ def submit_feedback(food_recommendation_id, feedback_text, feedback_type):
     
     try:
         with st.spinner("Processing feedback..."):
+            # Call the special needs service directly for feedback
             response = requests.post(
                 f"{SPECIAL_NEEDS_URL}/feedback",
                 json=data,
                 headers=headers
             )
-            if response.status_code == 201:
+            if response.status_code == 200:
                 return response.json()
             else:
-                st.error(f"Error: {response.json()['detail']}")
+                st.error(f"Error: {response.json().get('detail', 'Unknown error')}")
                 return None
     except Exception as e:
         st.error(f"Error: {str(e)}")
@@ -243,10 +292,12 @@ def get_user_feedbacks():
         return None
     
     headers = {"Authorization": f"Bearer {st.session_state.token}"}
+    user_id = st.session_state.user["id"]
     
     try:
+        # Call the special needs service directly for user feedbacks
         response = requests.get(
-            f"{SPECIAL_NEEDS_URL}/feedback",
+            f"{SPECIAL_NEEDS_URL}/feedback/user/{user_id}",
             headers=headers
         )
         if response.status_code == 200:
@@ -499,10 +550,11 @@ def display_diet_requirements_page():
                     st.write(f"**Fat:** {values['fat']:.1f} g")
                     st.write(f"**Fiber:** {values['fiber']:.1f} g")
                     
-                    if "sugar" in values:
+                    # Safely handle optional fields
+                    if "sugar" in values and values["sugar"] is not None:
                         st.write(f"**Sugar:** {values['sugar']:.1f} g")
                     
-                    if "sodium" in values:
+                    if "sodium" in values and values["sodium"] is not None:
                         st.write(f"**Sodium:** {values['sodium']:.1f} mg")
         
         # Display weekly average
@@ -517,10 +569,11 @@ def display_diet_requirements_page():
             st.write(f"**Fat:** {weekly['fat']:.1f} g")
             st.write(f"**Fiber:** {weekly['fiber']:.1f} g")
             
-            if "sugar" in weekly:
+            # Safely handle optional fields
+            if "sugar" in weekly and weekly["sugar"] is not None:
                 st.write(f"**Sugar:** {weekly['sugar']:.1f} g")
             
-            if "sodium" in weekly:
+            if "sodium" in weekly and weekly["sodium"] is not None:
                 st.write(f"**Sodium:** {weekly['sodium']:.1f} mg")
     
     # Option to generate new diet requirements

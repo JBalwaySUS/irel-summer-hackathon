@@ -5,7 +5,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python -m services.user_management.main
+    command: uvicorn services.user_management.main:app --host 0.0.0.0 --port 8000 --reload
     volumes:
       - .:/app
     ports:
@@ -22,7 +22,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python -m services.diet_requirements_generator.main
+    command: uvicorn services.diet_requirements_generator.main:app --host 0.0.0.0 --port 8001 --reload
     volumes:
       - .:/app    
     ports:
@@ -38,7 +38,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python -m services.food_plate_recommendation.main
+    command: uvicorn services.food_plate_recommendation.main:app --host 0.0.0.0 --port 8002 --reload
     volumes:
       - .:/app
     ports:
@@ -54,32 +54,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    command: python -m services.special_needs_accommodation.main
+    command: uvicorn services.special_needs_accommodation.main:app --host 0.0.0.0 --port 8003 --reload
     volumes:
       - .:/app
     ports:
       - "8003:8003"
-    environment:
-      - MONGODB_URL=mongodb+srv://JBalwaySUS:678007@cluster0.zqwpk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
-      - DATABASE_NAME=virtual_dietician
-      - GROQ_API_KEY=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
-    networks:
-      - virtual_dietician_network
-
-  orchestrator:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    command: python -m services.orchestrator.main
-    volumes:
-      - .:/app
-    ports:
-      - "8004:8004"
-    depends_on:
-      - user-management
-      - diet-requirements
-      - food-recommendation
-      - special-needs
     environment:
       - MONGODB_URL=mongodb+srv://JBalwaySUS:678007@cluster0.zqwpk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
       - DATABASE_NAME=virtual_dietician
@@ -97,7 +76,10 @@ services:
     ports:
       - "8501:8501"
     depends_on:
-      - orchestrator
+      - user-management
+      - diet-requirements
+      - food-recommendation
+      - special-needs
     environment:
       - GROQ_API_KEY=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
     networks:

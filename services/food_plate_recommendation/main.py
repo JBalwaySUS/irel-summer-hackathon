@@ -6,7 +6,6 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from services.shared.database import Database
 from .router import router
-from .orchestrator_router import router as orchestrator_router
 
 app = FastAPI(title="Food Plate Recommendation Service", description="Generates personalized meal recommendations based on diet requirements")
 
@@ -21,7 +20,6 @@ app.add_middleware(
 
 # Include routers
 app.include_router(router, prefix="/api/v1")
-app.include_router(orchestrator_router, prefix="/api/orchestrator")
 
 @app.on_event("startup")
 async def startup_db_client():

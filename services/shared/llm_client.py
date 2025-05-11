@@ -8,7 +8,7 @@ load_dotenv()
 class LLMClient:
     def __init__(self):
         self.client = groq.AsyncClient(api_key=os.getenv("GROQ_API_KEY"))
-        self.model = "llama3-70b-8192"  # Default Llama model from Groq
+        self.model = "meta-llama/llama-4-scout-17b-16e-instruct"  # Default Llama model from Groq
 
     async def generate_response(self, system_prompt, user_prompt, temperature=0.7):
         """

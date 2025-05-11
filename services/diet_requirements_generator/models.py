@@ -10,10 +10,10 @@ class DietRequirementStatus(str, Enum):
 
 class NutritionalValue(BaseModel):
     calories: float
-    protein: float  # in grams
-    carbohydrates: float  # in grams
-    fat: float  # in grams
-    fiber: float  # in grams
+    protein: Optional[float] = None  # in grams
+    carbohydrates: Optional[float] = None  # in grams
+    fat: Optional[float] = None  # in grams
+    fiber: Optional[float] = None  # in grams
     sugar: Optional[float] = None  # in grams
     sodium: Optional[float] = None  # in milligrams
     vitamins: Optional[Dict[str, float]] = None  # key-value pairs for different vitamins
@@ -31,6 +31,7 @@ class DietRequirementCreate(BaseModel):
     user_id: str
 
 class DietRequirementResponse(BaseModel):
+    status_code: int
     id: str
     user_id: str
     created_at: datetime
