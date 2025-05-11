@@ -1,0 +1,79 @@
+{
+  "daily_requirements": {
+    "monday": {
+      "calories": 2100.0,
+      "protein": 110.0,
+      "carbohydrates": 240.0,
+      "fat": 70.0,
+      "fiber": 25.0,
+      "sugar": 40.0,
+      "sodium": 1500.0
+    },
+    "tuesday": {
+      "calories": 2100.0,
+      "protein": 115.0,
+      "carbohydrates": 230.0,
+      "fat": 75.0,
+      "fiber": 30.0,
+      "sugar": 35.0,
+      "sodium": 1500.0
+    },
+    "wednesday": {
+      "calories": 2000.0,
+      "protein": 105.0,
+      "carbohydrates": 235.0,
+      "fat": 65.0,
+      "fiber": 28.0,
+      "sugar": 38.0,
+      "sodium": 1400.0
+    },
+    "thursday": {
+      "calories": 2150.0,
+      "protein": 120.0,
+      "carbohydrates": 245.0,
+      "fat": 72.0,
+      "fiber": 32.0,
+      "sugar": 36.0,
+      "sodium": 1550.0
+    },
+    "friday": {
+      "calories": 2200.0,
+      "protein": 125.0,
+      "carbohydrates": 250.0,
+      "fat": 74.0,
+      "fiber": 30.0,
+      "sugar": 40.0,
+      "sodium": 1600.0
+    },
+    "saturday": {
+      "calories": 2300.0,
+      "protein": 130.0,
+      "carbohydrates": 260.0,
+      "fat": 78.0,
+      "fiber": 35.0,
+      "sugar": 45.0,
+      "sodium": 1650.0
+    },
+    "sunday": {
+      "calories": 2000.0,
+      "protein": 105.0,
+      "carbohydrates": 230.0,
+      "fat": 68.0,
+      "fiber": 28.0,
+      "sugar": 35.0,
+      "sodium": 1450.0
+    }
+  },
+  "weekly_average": {
+    "calories": 2121.43,
+    "protein": 115.71,
+    "carbohydrates": 241.43,
+    "fat": 71.71,
+    "fiber": 29.71,
+    "sugar": 38.43,
+    "sodium": 1521.43
+  },
+  "user_id": "sample_user",
+  "created_at": "2025-05-11T12:00:00.000Z",
+  "status": "COMPLETED"
+}

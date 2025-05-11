@@ -1,0 +1,315 @@
+{
+  "meal_plans": {
+    "monday": {
+      "breakfast": {
+        "description": "Oatmeal with Berries and Nuts",
+        "items": [
+          "1 cup cooked steel-cut oats",
+          "1/2 cup mixed berries",
+          "1 tbsp honey",
+          "1 tbsp chopped almonds",
+          "1 cup almond milk"
+        ],
+        "preparation": "Cook oats according to package instructions. Top with berries, honey, and almonds. Serve with almond milk."
+      },
+      "lunch": {
+        "description": "Grilled Chicken Salad",
+        "items": [
+          "4 oz grilled chicken breast",
+          "2 cups mixed greens",
+          "1/4 cup cherry tomatoes",
+          "1/4 cup cucumber, sliced",
+          "1/4 avocado, sliced",
+          "2 tbsp olive oil and lemon dressing"
+        ],
+        "preparation": "Grill chicken and slice. Toss with greens and vegetables. Drizzle with dressing."
+      },
+      "dinner": {
+        "description": "Baked Salmon with Roasted Vegetables",
+        "items": [
+          "5 oz salmon fillet",
+          "1 cup broccoli florets",
+          "1 cup cauliflower florets",
+          "1/2 cup carrots, sliced",
+          "1 tbsp olive oil",
+          "1 tsp herbs de provence",
+          "1/2 cup quinoa, cooked"
+        ],
+        "preparation": "Bake salmon at 375°F for 15-18 minutes. Toss vegetables with olive oil and herbs, roast at 400°F for 20-25 minutes. Serve with cooked quinoa."
+      },
+      "snacks": [
+        "1 apple with 1 tbsp almond butter",
+        "1 cup Greek yogurt with 1 tsp honey"
+      ]
+    },
+    "tuesday": {
+      "breakfast": {
+        "description": "Greek Yogurt Parfait",
+        "items": [
+          "1 cup Greek yogurt",
+          "1/4 cup granola",
+          "1 tbsp honey",
+          "1/2 cup mixed berries"
+        ],
+        "preparation": "Layer yogurt, granola, and berries in a glass. Drizzle with honey."
+      },
+      "lunch": {
+        "description": "Turkey and Avocado Wrap",
+        "items": [
+          "1 whole grain tortilla",
+          "4 oz sliced turkey breast",
+          "1/2 avocado, sliced",
+          "1/4 cup shredded lettuce",
+          "2 slices tomato",
+          "1 tbsp hummus"
+        ],
+        "preparation": "Spread hummus on tortilla. Layer with turkey, avocado, lettuce, and tomato. Roll up tightly."
+      },
+      "dinner": {
+        "description": "Stir-Fried Tofu with Vegetables",
+        "items": [
+          "4 oz firm tofu, cubed",
+          "1 cup mixed vegetables (bell peppers, snap peas, carrots)",
+          "2 tbsp low-sodium soy sauce",
+          "1 tsp sesame oil",
+          "1 clove garlic, minced",
+          "1/2 cup brown rice, cooked"
+        ],
+        "preparation": "Stir-fry tofu until golden. Add vegetables and garlic, cook until tender-crisp. Add soy sauce and sesame oil. Serve over brown rice."
+      },
+      "snacks": [
+        "1/4 cup mixed nuts",
+        "1 pear"
+      ]
+    },
+    "wednesday": {
+      "breakfast": {
+        "description": "Vegetable Omelet",
+        "items": [
+          "2 eggs",
+          "1/4 cup diced bell peppers",
+          "1/4 cup diced onions",
+          "1/4 cup spinach",
+          "1 tbsp olive oil",
+          "1 slice whole grain toast"
+        ],
+        "preparation": "Sauté vegetables in olive oil. Beat eggs and pour over vegetables. Cook until set. Serve with toast."
+      },
+      "lunch": {
+        "description": "Lentil Soup with Whole Grain Bread",
+        "items": [
+          "1 cup lentil soup",
+          "1 slice whole grain bread",
+          "1 tsp olive oil"
+        ],
+        "preparation": "Heat soup. Drizzle bread with olive oil and serve alongside soup."
+      },
+      "dinner": {
+        "description": "Baked Chicken with Sweet Potato and Broccoli",
+        "items": [
+          "5 oz chicken breast",
+          "1 medium sweet potato, baked",
+          "1 cup steamed broccoli",
+          "1 tbsp olive oil",
+          "1 tsp herbs and spices"
+        ],
+        "preparation": "Season chicken with herbs and spices. Bake at 375°F for 25 minutes. Serve with baked sweet potato and steamed broccoli."
+      },
+      "snacks": [
+        "1 cup sliced vegetables with 2 tbsp hummus",
+        "1 small banana"
+      ]
+    },
+    "thursday": {
+      "breakfast": {
+        "description": "Whole Grain Toast with Avocado and Egg",
+        "items": [
+          "2 slices whole grain toast",
+          "1/2 avocado, mashed",
+          "2 eggs, poached",
+          "Salt and pepper to taste",
+          "Red pepper flakes (optional)"
+        ],
+        "preparation": "Toast bread. Spread mashed avocado on toast. Top with poached eggs. Season with salt, pepper, and red pepper flakes."
+      },
+      "lunch": {
+        "description": "Quinoa Bowl with Roasted Vegetables",
+        "items": [
+          "1 cup cooked quinoa",
+          "1 cup roasted mixed vegetables (zucchini, bell peppers, mushrooms)",
+          "1/4 cup chickpeas",
+          "2 tbsp tahini dressing",
+          "1 tbsp fresh herbs"
+        ],
+        "preparation": "Combine quinoa, roasted vegetables, and chickpeas in a bowl. Drizzle with tahini dressing and sprinkle with fresh herbs."
+      },
+      "dinner": {
+        "description": "Grilled Fish with Asparagus and Brown Rice",
+        "items": [
+          "5 oz white fish (cod or tilapia)",
+          "1 cup asparagus spears",
+          "1/2 cup brown rice, cooked",
+          "1 tbsp olive oil",
+          "1 lemon, sliced",
+          "1 tsp herbs and spices"
+        ],
+        "preparation": "Season fish with herbs and spices. Grill with lemon slices. Toss asparagus with olive oil and grill. Serve with brown rice."
+      },
+      "snacks": [
+        "1 small apple with 1 string cheese",
+        "1/4 cup trail mix"
+      ]
+    },
+    "friday": {
+      "breakfast": {
+        "description": "Smoothie Bowl",
+        "items": [
+          "1 frozen banana",
+          "1/2 cup frozen berries",
+          "1 cup spinach",
+          "1 cup almond milk",
+          "1 tbsp chia seeds",
+          "1 tbsp almond butter",
+          "Toppings: 1 tbsp granola, 1 tsp coconut flakes, fresh berries"
+        ],
+        "preparation": "Blend banana, frozen berries, spinach, almond milk, chia seeds, and almond butter until smooth. Pour into a bowl and add toppings."
+      },
+      "lunch": {
+        "description": "Mediterranean Chickpea Salad",
+        "items": [
+          "1 cup mixed greens",
+          "1/2 cup chickpeas",
+          "1/4 cup cherry tomatoes, halved",
+          "1/4 cup cucumber, diced",
+          "2 tbsp feta cheese",
+          "2 tbsp olives",
+          "2 tbsp olive oil and lemon dressing"
+        ],
+        "preparation": "Combine all ingredients in a bowl. Toss with dressing."
+      },
+      "dinner": {
+        "description": "Lean Beef Stir-Fry with Vegetables",
+        "items": [
+          "4 oz lean beef strips",
+          "1 cup mixed vegetables (broccoli, carrots, snow peas)",
+          "1 tbsp low-sodium soy sauce",
+          "1 tsp sesame oil",
+          "1 clove garlic, minced",
+          "1/2 cup brown rice, cooked"
+        ],
+        "preparation": "Stir-fry beef until browned. Add vegetables and garlic, cook until tender-crisp. Add soy sauce and sesame oil. Serve over brown rice."
+      },
+      "snacks": [
+        "1 cup Greek yogurt with 1 tbsp honey",
+        "1 orange"
+      ]
+    },
+    "saturday": {
+      "breakfast": {
+        "description": "Protein Pancakes with Fruit",
+        "items": [
+          "1/2 cup oat flour",
+          "1 scoop protein powder",
+          "1 banana, mashed",
+          "2 eggs",
+          "1/4 cup milk",
+          "1/2 cup mixed berries",
+          "1 tbsp maple syrup"
+        ],
+        "preparation": "Mix oat flour, protein powder, mashed banana, eggs, and milk. Cook pancakes on a griddle. Serve with berries and maple syrup."
+      },
+      "lunch": {
+        "description": "Tuna Salad Sandwich",
+        "items": [
+          "3 oz canned tuna in water, drained",
+          "1 tbsp Greek yogurt",
+          "1 tsp Dijon mustard",
+          "1/4 cup diced celery",
+          "2 slices whole grain bread",
+          "Lettuce and tomato"
+        ],
+        "preparation": "Mix tuna, Greek yogurt, mustard, and celery. Spread on bread. Add lettuce and tomato."
+      },
+      "dinner": {
+        "description": "Vegetable and Bean Chili",
+        "items": [
+          "1/2 cup mixed beans (black beans, kidney beans)",
+          "1 cup mixed vegetables (bell peppers, onions, zucchini)",
+          "1/4 cup diced tomatoes",
+          "1 tbsp chili powder",
+          "1/2 tsp cumin",
+          "1/4 avocado, sliced",
+          "1 tbsp Greek yogurt"
+        ],
+        "preparation": "Simmer beans, vegetables, tomatoes, and spices until heated through. Top with avocado and Greek yogurt."
+      },
+      "snacks": [
+        "1 cup air-popped popcorn",
+        "1 apple with 1 tbsp peanut butter"
+      ]
+    },
+    "sunday": {
+      "breakfast": {
+        "description": "Vegetable Frittata",
+        "items": [
+          "3 eggs",
+          "1/4 cup diced bell peppers",
+          "1/4 cup diced onions",
+          "1/4 cup spinach",
+          "2 tbsp grated cheese",
+          "1 tbsp olive oil",
+          "1 slice whole grain toast"
+        ],
+        "preparation": "Sauté vegetables in olive oil. Beat eggs and pour over vegetables. Sprinkle with cheese. Bake at 375°F for 15 minutes. Serve with toast."
+      },
+      "lunch": {
+        "description": "Grilled Vegetable and Hummus Wrap",
+        "items": [
+          "1 whole grain tortilla",
+          "2 tbsp hummus",
+          "1/2 cup grilled vegetables (zucchini, eggplant, bell peppers)",
+          "1/4 cup baby spinach",
+          "1 tbsp feta cheese"
+        ],
+        "preparation": "Spread hummus on tortilla. Top with grilled vegetables, spinach, and feta cheese. Roll up tightly."
+      },
+      "dinner": {
+        "description": "Baked Salmon with Quinoa and Roasted Brussels Sprouts",
+        "items": [
+          "5 oz salmon fillet",
+          "1 cup Brussels sprouts, halved",
+          "1/2 cup quinoa, cooked",
+          "1 tbsp olive oil",
+          "1 lemon, sliced",
+          "1 tsp herbs and spices"
+        ],
+        "preparation": "Season salmon with herbs and spices. Bake at 375°F for 15-18 minutes with lemon slices. Toss Brussels sprouts with olive oil and roast at 400°F for 20 minutes. Serve with quinoa."
+      },
+      "snacks": [
+        "1/4 cup hummus with vegetable sticks",
+        "1 small banana with 1 tbsp almond butter"
+      ]
+    }
+  },
+  "diet_requirements": {
+    "weekly_average": {
+      "calories": 2100.0,
+      "protein": 115.0,
+      "carbohydrates": 240.0,
+      "fat": 70.0,
+      "fiber": 30.0
+    }
+  },
+  "user_preferences": {
+    "food_availability": null,
+    "meal_preferences": {
+      "breakfast": ["oatmeal", "eggs", "yogurt"],
+      "lunch": ["salad", "sandwich", "soup"],
+      "dinner": ["fish", "chicken", "vegetarian"],
+      "snack": ["fruit", "nuts", "yogurt"]
+    },
+    "custom_instructions": "If I skip breakfast, please increase my lunch portion by about 30% to compensate for the missed calories."
+  },
+  "created_at": "2025-05-11T12:00:00.000Z",
+  "status": "COMPLETED"
+}

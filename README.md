@@ -107,3 +107,183 @@ Food Plate / Meal Recommendation
 | Flow: | Main (success) Flow: User navigates to the "Profile" or "Settings" section of the application. User selects the option to edit their profile information. System displays the current profile information including: Personal information (height, age, current weight, gender). Dietary restrictions (e.g., allergies, preferences like vegetarian, vegan). Health goals (e.g., weight loss, muscle gain, maintenance). Activity level. Any other relevant health conditions or requirements. User modifies any of the desired fields. User confirms and saves the changes. System validates the updated information (e.g., data types, required fields). System stores the updated profile information. System confirms to the user that their profile has been successfully updated.  |
 |  | Alternate Flows: a) User enters invalid data for one or more profile fields (e.g., non-numeric age, text in weight field, date in incorrect format). System highlights the field(s) with invalid data and displays specific error messages (e.g., "Age must be a number," "Please enter weight in kg.").  The profile is not saved until corrections are made. b) Network error occurs while attempting to save the updated profile. System displays an error message: "Your profile could not be updated due to a network error. Please check your connection and try again." The changes are not saved. |
 | Post condition: | The updated User Profile is ready for diet plan generation |
+
+# Virtual Dietician Application
+
+A comprehensive AI-powered dietician application that provides personalized diet plans and meal recommendations based on user profiles, with special needs accommodation for dietary restrictions and health concerns.
+
+## Architecture
+
+The application consists of four microservices and a frontend:
+
+1. **User Management Service**: Handles user registration, authentication, and profile management
+2. **Diet Requirements Generator**: Generates personalized diet requirements based on user profiles
+3. **Food Plate Recommendation**: Creates detailed meal plans and recipes tailored to the user's diet requirements
+4. **Special Needs Accommodation**: Analyzes user feedback to identify potential dietary restrictions or health concerns
+5. **Frontend**: A Streamlit web application that interacts with all the microservices
+
+## Features
+
+- User registration and authentication
+- Detailed user profile management with health metrics, diet preferences, and allergies
+- Personalized diet requirements generation based on user profiles
+- Weekly meal planning with detailed nutritional information
+- Accommodation for food availability and meal preferences
+- Analysis of negative feedback to identify potential health concerns or dietary restrictions
+- Recommendations for food alternatives based on identified concerns
+
+## Prerequisites
+
+- Python 3.8 or higher
+- MongoDB
+- Docker and Docker Compose (optional, for containerized deployment)
+- OpenAI API key (for LLM-powered features)
+- Groq API key (for LLM-powered features)
+
+## Installation
+
+### Using Python (Development)
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/virtual-dietician.git
+   cd virtual-dietician
+   ```
+
+2. Install the required packages:
+   ```
+   pip install -r requirements.txt
+   ```
+
+3. Set environment variables:
+   ```
+   # On Windows
+   set MONGODB_URL=mongodb://localhost:27017
+   set DATABASE_NAME=virtual_dietician
+   set SECRET_KEY=your_secret_key_here
+   set GROQ_API_KEY=your_groq_api_key
+
+   # On Linux/Mac
+   export MONGODB_URL=mongodb://localhost:27017
+   export DATABASE_NAME=virtual_dietician
+   export SECRET_KEY=your_secret_key_here
+   export GROQ_API_KEY=your_groq_api_key
+   ```
+
+4. Start MongoDB (if not already running):
+   ```
+   mongod --dbpath /path/to/your/data/directory
+   ```
+
+5. Start each service in a separate terminal:
+   ```
+   # User Management Service
+   python -m services.user_management.main
+
+   # Diet Requirements Generator
+   python -m services.diet_requirements_generator.main
+
+   # Food Plate Recommendation
+   python -m services.food_plate_recommendation.main
+
+   # Special Needs Accommodation
+   python -m services.special_needs_accommodation.main
+
+   # Frontend
+   streamlit run frontend/app.py
+   ```
+
+### Using Docker Compose (Production)
+
+1. Clone the repository:
+   ```
+   git clone https://github.com/yourusername/virtual-dietician.git
+   cd virtual-dietician
+   ```
+
+2. Create a `.env` file in the root directory with your Groq API key:
+   ```
+   GROQ_API_KEY=your_groq_api_key
+   ```
+
+3. Start all services using Docker Compose:
+   ```
+   docker-compose up -d
+   ```
+
+4. Access the application at http://localhost:8501
+
+## Usage
+
+1. Open your browser and go to http://localhost:8501
+2. Register a new account or login with existing credentials
+3. Create or update your profile with health metrics and dietary preferences
+4. Generate diet requirements based on your profile
+5. Create meal plans tailored to your requirements
+6. Provide feedback on the meal plans to get accommodation for special dietary needs
+
+## Terminal Applications
+
+Each microservice also includes a standalone terminal application for testing and debugging:
+
+```
+# User Management Terminal App
+python -m services.user_management.terminal_app
+
+# Diet Requirements Generator Terminal App
+python -m services.diet_requirements_generator.terminal_app
+
+# Food Plate Recommendation Terminal App
+python -m services.food_plate_recommendation.terminal_app
+
+# Special Needs Accommodation Terminal App
+python -m services.special_needs_accommodation.terminal_app
+```
+
+## API Documentation
+
+After starting each service, API documentation is available at:
+
+- User Management: http://localhost:8000/docs
+- Diet Requirements Generator: http://localhost:8001/docs
+- Food Plate Recommendation: http://localhost:8002/docs
+- Special Needs Accommodation: http://localhost:8003/docs
+
+## Project Structure
+
+```
+virtual-dietician/
+├── docker-compose.yml
+├── Dockerfile
+├── requirements.txt
+├── README.md
+├── frontend/
+│   └── app.py
+└── services/
+    ├── diet_requirements_generator/
+    │   ├── handler.py
+    │   ├── main.py
+    │   ├── models.py
+    │   ├── router.py
+    │   └── terminal_app.py
+    ├── food_plate_recommendation/
+    │   ├── handler.py
+    │   ├── main.py
+    │   ├── models.py
+    │   ├── router.py
+    │   └── terminal_app.py
+    ├── shared/
+    │   ├── database.py
+    │   └── llm_client.py
+    ├── special_needs_accommodation/
+    │   ├── handler.py
+    │   ├── main.py
+    │   ├── models.py
+    │   ├── router.py
+    │   └── terminal_app.py
+    └── user_management/
+        ├── auth.py
+        ├── main.py
+        ├── models.py
+        ├── router.py
+        └── terminal_app.py

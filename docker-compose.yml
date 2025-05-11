@@ -1,0 +1,108 @@
+version: '3'
+
+services:
+  user-management:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m services.user_management.main
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    environment:
+      - MONGODB_URL=mongodb+srv://JBalwaySUS:678007@cluster0.zqwpk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - DATABASE_NAME=virtual_dietician
+      - SECRET_KEY=your_secret_key_here
+      - GROQ_API_KEY=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
+    networks:
+      - virtual_dietician_network
+
+  diet-requirements:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m services.diet_requirements_generator.main
+    volumes:
+      - .:/app    
+    ports:
+      - "8001:8001"
+    environment:
+      - MONGODB_URL=mongodb+srv://JBalwaySUS:678007@cluster0.zqwpk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - DATABASE_NAME=virtual_dietician
+      - GROQ_API_KEY=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
+    networks:
+      - virtual_dietician_network
+
+  food-recommendation:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m services.food_plate_recommendation.main
+    volumes:
+      - .:/app
+    ports:
+      - "8002:8002"
+    environment:
+      - MONGODB_URL=mongodb+srv://JBalwaySUS:678007@cluster0.zqwpk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - DATABASE_NAME=virtual_dietician
+      - GROQ_API_KEY=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
+    networks:
+      - virtual_dietician_network
+
+  special-needs:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m services.special_needs_accommodation.main
+    volumes:
+      - .:/app
+    ports:
+      - "8003:8003"
+    environment:
+      - MONGODB_URL=mongodb+srv://JBalwaySUS:678007@cluster0.zqwpk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - DATABASE_NAME=virtual_dietician
+      - GROQ_API_KEY=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
+    networks:
+      - virtual_dietician_network
+
+  orchestrator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: python -m services.orchestrator.main
+    volumes:
+      - .:/app
+    ports:
+      - "8004:8004"
+    depends_on:
+      - user-management
+      - diet-requirements
+      - food-recommendation
+      - special-needs
+    environment:
+      - MONGODB_URL=mongodb+srv://JBalwaySUS:678007@cluster0.zqwpk.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0
+      - DATABASE_NAME=virtual_dietician
+      - GROQ_API_KEY=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
+    networks:
+      - virtual_dietician_network
+
+  frontend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: streamlit run frontend/app.py
+    volumes:
+      - .:/app
+    ports:
+      - "8501:8501"
+    depends_on:
+      - orchestrator
+    environment:
+      - GROQ_API_KEY=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
+    networks:
+      - virtual_dietician_network
+
+networks:
+  virtual_dietician_network:
+    driver: bridge
