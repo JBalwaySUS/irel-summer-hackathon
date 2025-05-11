@@ -205,17 +205,18 @@ def generate_food_recommendation(diet_requirement_id, food_availability=None, me
     user_id = st.session_state.user["id"]
     user_data = st.session_state.user
     
+    diet_requirements = get_latest_diet_requirements()
+    if not diet_requirements:
+        st.error("Please generate diet requirements first")
+        return None
+    
     # Prepare request data
     request_data = {
         "user_data": user_data,
-        "diet_requirement_id": diet_requirement_id
+        "diet_requirement": diet_requirements,
+        "food_availability": food_availability,
+        "meal_preferences": meal_preferences
     }
-    
-    if food_availability:
-        request_data["food_availability"] = food_availability
-    
-    if meal_preferences:
-        request_data["meal_preferences"] = meal_preferences
     
     try:
         with st.spinner("Generating meal recommendations..."):
@@ -225,7 +226,7 @@ def generate_food_recommendation(diet_requirement_id, food_availability=None, me
                 json=request_data,
                 headers=headers
             )
-            if response.status_code == 200:
+            if response.status_code == 201:  # Changed from 200 to 201
                 return response.json()
             else:
                 st.error(f"Error: {response.json().get('detail', 'Unknown error')}")

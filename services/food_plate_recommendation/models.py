@@ -1,5 +1,5 @@
 from pydantic import BaseModel, Field
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 from enum import Enum
 
@@ -70,3 +70,9 @@ class FoodRecommendationResponse(BaseModel):
 
     class Config:
         orm_mode = True
+
+class UserDataRequest(BaseModel):
+    user_data: Dict[str, Any]
+    diet_requirement: Dict[str, Any]
+    food_availability: Optional[List[str]] = None
+    meal_preferences: Optional[Dict[str, List[str]]] = None

@@ -16,167 +16,36 @@ class FoodRecommendationHandler:
     def __init__(self):
         self.llm_client = LLMClient()
     
-    async def generate_recommendations_from_data(
-        self, 
-        user_profile: Dict[str, Any], 
-        diet_requirements: Dict[str, Any], 
-        user_id: Optional[str] = None,
-        food_availability: list = None,
-        meal_preferences: dict = None
-    ):
-        """
-        Generate food recommendations based on user profile and diet requirements provided by the orchestrator
-        """
-        try:
-            # Validate inputs
-            if not user_profile:
-                return {
-                    "user_id": user_id,
-                    "created_at": datetime.utcnow(),
-                    "status": "FAILED",
-                    "error_message": "User profile data not provided"
-                }
-                
-            if not diet_requirements:
-                return {
-                    "user_id": user_id,
-                    "created_at": datetime.utcnow(),
-                    "status": "FAILED",
-                    "error_message": "Diet requirements data not provided"
-                }
-            
-            # Extract relevant profile data
-            age = user_profile["age"]
-            gender = user_profile["gender"]
-            height = user_profile["height"]
-            weight = user_profile["weight"]
-            diet_type = user_profile["diet_type"]
-            activity_level = user_profile["activity_level"]
-            health_goal = user_profile["health_goal"]
-            allergies = user_profile.get("allergies", [])
-            dietary_restrictions = user_profile.get("dietary_restrictions", [])
-            medical_conditions = user_profile.get("medical_conditions", [])
-            
-            # Extract diet requirements data
-            weekly_average = diet_requirements.get("weekly_average", {})
-            daily_requirements = diet_requirements.get("daily_requirements", {})
-            
-            # Create system prompt for food recommendation
-            system_prompt = """
-You are a professional nutritionist who specializes in creating personalized meal plans.
-Your task is to generate a weekly meal plan based on a person's profile and their nutritional requirements.
-Generate a meal plan for each day of the week with breakfast, lunch, dinner, and snacks.
-The response should be structured as a JSON object.
-
-Only respond with the JSON object, no additional text.
-            """
-            
-            # Create user prompt with profile and requirements information
-            user_prompt = f"""
-Generate a weekly meal plan for a person with the following profile:
-- Age: {age}
-- Gender: {gender}
-- Height: {height} cm
-- Weight: {weight} kg
-- Diet type: {diet_type}
-- Activity level: {activity_level}
-- Health goal: {health_goal}
-- Allergies: {', '.join(allergies) if allergies else 'None'}
-- Dietary restrictions: {', '.join(dietary_restrictions) if dietary_restrictions else 'None'}
-- Medical conditions: {', '.join(medical_conditions) if medical_conditions else 'None'}
-
-The nutritional requirements are:
-{json.dumps(weekly_average, indent=2)}
-
-Please provide a detailed meal plan for each day of the week (Monday through Sunday) that matches these requirements.
-Each day should include breakfast, lunch, dinner, and 1-2 snacks.
-For each meal, include a brief description, ingredients, and preparation instructions.
-"""
-            
-            # Call LLM API to generate food recommendations
-            llm_response = await self.llm_client.generate_response(
-                system_prompt=system_prompt,
-                user_prompt=user_prompt,
-                temperature=0.3
-            )
-            
-            if not llm_response:
-                return {
-                    "user_id": user_id,
-                    "created_at": datetime.utcnow(),
-                    "status": "FAILED",
-                    "error_message": "Failed to generate response from LLM"
-                }
-            
-            # Parse the JSON response
-            try:
-                food_recommendation_data = json.loads(llm_response)
-                
-                # Create and return the food recommendation object
-                return {
-                    "user_id": user_id,
-                    "created_at": datetime.utcnow(),
-                    "status": "COMPLETED",
-                    "weekly_plan": food_recommendation_data,
-                    "llm_response": llm_response
-                }
-            except json.JSONDecodeError as e:
-                return {
-                    "user_id": user_id,
-                    "created_at": datetime.utcnow(),
-                    "status": "FAILED",
-                    "error_message": f"Failed to parse LLM response as JSON: {str(e)}",
-                    "llm_response": llm_response
-                }
-            except Exception as e:
-                return {
-                    "user_id": user_id,
-                    "created_at": datetime.utcnow(),
-                    "status": "FAILED",
-                    "error_message": f"Error processing LLM response: {str(e)}",
-                    "llm_response": llm_response
-                }
-                
-        except Exception as e:
-            return {
-                "user_id": user_id,
-                "created_at": datetime.utcnow(),
-                "status": "FAILED",
-                "error_message": f"Error generating food recommendations: {str(e)}"
-            }
-    
-    # Keep the original method for backward compatibility
     async def generate_food_recommendation(
         self, 
-        user_id: str, 
-        diet_requirement_id: str,
+        user_id: str,
+        user_data: Dict[str, Any],
+        diet_requirement: Dict[str, Any],
         food_availability: list = None,
-        meal_preferences: dict = None
+        meal_preferences: dict = None,
     ) -> FoodRecommendation:
         """
         Generate food recommendations based on diet requirements
         """
         try:
             # Get diet requirements
-            diet_plan_collection = await get_diet_plan_collection()
-            diet_requirement = await diet_plan_collection.find_one({"_id": ObjectId(diet_requirement_id)})
-            
-            if not diet_requirement:
+            diet_requirement_id = diet_requirement.get("id")
+        
+            if not diet_requirement_id:
                 return FoodRecommendation(
                     user_id=user_id,
-                    diet_requirement_id=diet_requirement_id,
+                    diet_requirement_id=str(diet_requirement.get("_id", "")),  # Use _id if id is not available
                     created_at=datetime.utcnow(),
                     status=RecommendationStatus.FAILED,
-                    error_message="Diet requirement not found"
+                    error_message="Diet requirement ID not found"
                 )
             
             # Get user profile
-            user_collection = await get_user_collection()
-            user = await user_collection.find_one({"_id": ObjectId(user_id)})
+            profile = user_data.get("profile")
             
-            if not user or not user.get("profile"):
+            if not profile:
                 return FoodRecommendation(
-                    user_id=user_id,
+                    user_id=user_data.get("id"),
                     diet_requirement_id=diet_requirement_id,
                     created_at=datetime.utcnow(),
                     status=RecommendationStatus.FAILED,
@@ -184,7 +53,6 @@ For each meal, include a brief description, ingredients, and preparation instruc
                 )
             
             # Extract profile data
-            profile = user["profile"]
             diet_type = profile["diet_type"]
             allergies = profile.get("allergies", [])
             dietary_restrictions = profile.get("dietary_restrictions", [])
@@ -269,12 +137,16 @@ Daily nutritional requirements:
             
             # Add daily nutritional requirements to the prompt
             for day, values in diet_requirement["daily_requirements"].items():
-                user_prompt += f"\n{day.capitalize()}:\n"
-                user_prompt += f"- Calories: {values['calories']:.1f} kcal\n"
-                user_prompt += f"- Protein: {values['protein']:.1f} g\n"
-                user_prompt += f"- Carbohydrates: {values['carbohydrates']:.1f} g\n"
-                user_prompt += f"- Fat: {values['fat']:.1f} g\n"
-                user_prompt += f"- Fiber: {values['fiber']:.1f} g\n"
+                if "calories" in values:
+                    user_prompt += f"- Calories: {values['calories']:.1f} kcal\n"
+                if "protein" in values:
+                    user_prompt += f"- Protein: {values['protein']:.1f} g\n"
+                if "carbohydrates" in values:
+                    user_prompt += f"- Carbohydrates: {values['carbohydrates']:.1f} g\n"
+                if "fat" in values:
+                    user_prompt += f"- Fat: {values['fat']:.1f} g\n"
+                if "fiber" in values:
+                    user_prompt += f"- Fiber: {values['fiber']:.1f} g\n"
             
             # Add food availability constraints if provided
             if food_availability:
@@ -306,8 +178,26 @@ Daily nutritional requirements:
             
             # Parse the JSON response
             try:
-                recommendation_data = json.loads(llm_response)
+                # Clean up the LLM response if it contains Markdown code blocks
+                cleaned_response = llm_response
+    
+                # Check if the response contains any code block markers
+                if "```" in cleaned_response:
+                    # Split by the first occurrence of ``` with or without json marker
+                    if "```json" in cleaned_response:
+                        cleaned_response = cleaned_response.split("```json", 1)[1]
+                    else:
+                        cleaned_response = cleaned_response.split("```", 1)[1]
+                    
+                    # Remove the closing ``` if present
+                    if "```" in cleaned_response:
+                        cleaned_response = cleaned_response.split("```", 1)[0]
                 
+                # Trim any leading/trailing whitespace
+                cleaned_response = cleaned_response.strip()
+
+                recommendation_data = json.loads(cleaned_response)
+
                 # Convert the data to Pydantic models
                 meal_plans = {}
                 for day, plan_data in recommendation_data["meal_plans"].items():
