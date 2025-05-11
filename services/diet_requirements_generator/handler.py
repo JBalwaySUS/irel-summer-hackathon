@@ -103,7 +103,24 @@ class DietRequirementsHandler:
         This is a private helper method used by other methods
         """
         try:
-            diet_data = json.loads(llm_response)
+             # Clean up the response if it contains markdown code blocks
+            if llm_response.strip().startswith("```"):
+                # Strip out the markdown code block syntax
+                json_str = llm_response.strip()
+                
+                # Remove opening code block marker (```json or just ```)
+                first_newline = json_str.find('\n')
+                if first_newline != -1:
+                    json_str = json_str[first_newline:].strip()
+                
+                # Remove closing code block marker if present
+                if json_str.endswith("```"):
+                    json_str = json_str[:-3].strip()
+                    
+                print(f"Cleaned LLM Response: {json_str}")  # Debugging line
+                diet_data = json.loads(json_str)
+            else:
+                diet_data = json.loads(llm_response)
             
             print(f"Parsed LLM Response: {diet_data}")  # Debugging line
             # Convert the data to Pydantic models
