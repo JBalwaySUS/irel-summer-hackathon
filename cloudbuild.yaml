@@ -76,10 +76,7 @@ steps:
 substitutions:
   _REGION: us-central1
   _REPOSITORY: virtual-dietician
-  _MONGODB_URL: mongodb://mongo:27017
   _DATABASE_NAME: virtual_dietician
-  _SECRET_KEY: ${_SECRET_KEY}
-  _GROQ_API_KEY: ${_GROQ_API_KEY}
   _USER_MANAGEMENT_URL: https://user-management-url/api/v1
   _DIET_REQUIREMENTS_URL: https://diet-requirements-url/api/v1
   _FOOD_RECOMMENDATION_URL: https://food-recommendation-url/api/v1
