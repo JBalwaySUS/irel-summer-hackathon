@@ -82,6 +82,9 @@ substitutions:
   _FOOD_RECOMMENDATION_URL: https://food-recommendation-url/api/v1
   _SPECIAL_NEEDS_URL: https://special-needs-url/api/v1
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+  
 images:
   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/frontend'
   - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/user_management'
