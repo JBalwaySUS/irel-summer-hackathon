@@ -4,12 +4,13 @@ import json
 from datetime import datetime
 import pandas as pd
 import time
+import os
 
-# Service URLs
-USER_MANAGEMENT_URL = "http://user-management:8000/api/v1"
-DIET_REQUIREMENTS_URL = "http://diet-requirements:8001/api/v1"
-FOOD_RECOMMENDATION_URL = "http://food-recommendation:8002/api/v1"
-SPECIAL_NEEDS_URL = "http://special-needs:8003/api/v1"
+# Service URLs - Read from environment variables, with local defaults
+USER_MANAGEMENT_URL = os.getenv("USER_MANAGEMENT_URL", "http://user-management:8000/api/v1")
+DIET_REQUIREMENTS_URL = os.getenv("DIET_REQUIREMENTS_URL", "http://diet-requirements:8001/api/v1")
+FOOD_RECOMMENDATION_URL = os.getenv("FOOD_RECOMMENDATION_URL", "http://food-recommendation:8002/api/v1")
+SPECIAL_NEEDS_URL = os.getenv("SPECIAL_NEEDS_URL", "http://special-needs:8003/api/v1")
 
 # Initialize session state
 if "user" not in st.session_state:
