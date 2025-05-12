@@ -1,0 +1,93 @@
+steps:
+  # Build and push frontend image
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/frontend', '-f', 'Dockerfile.frontend', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/frontend']
+  
+  # Deploy frontend to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'frontend'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/frontend'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--set-env-vars=USER_MANAGEMENT_URL=${_USER_MANAGEMENT_URL},DIET_REQUIREMENTS_URL=${_DIET_REQUIREMENTS_URL},FOOD_RECOMMENDATION_URL=${_FOOD_RECOMMENDATION_URL},SPECIAL_NEEDS_URL=${_SPECIAL_NEEDS_URL}'
+  
+  # Build and deploy user_management service
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/user_management', '--build-arg', 'SERVICE_NAME=user_management', '-f', 'Dockerfile', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/user_management']
+  
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'user-management'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/user_management'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--set-env-vars=MONGODB_URL=${_MONGODB_URL},DATABASE_NAME=${_DATABASE_NAME},SECRET_KEY=${_SECRET_KEY}'
+
+  # Repeat similar steps for diet_requirements_generator
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/diet_requirements', '--build-arg', 'SERVICE_NAME=diet_requirements_generator', '-f', 'Dockerfile', '.']
+  
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/diet_requirements']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'diet-requirements'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/diet_requirements'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--set-env-vars=MONGODB_URL=${_MONGODB_URL},DATABASE_NAME=${_DATABASE_NAME},GROQ_API_KEY=${_GROQ_API_KEY}'
+
+  # Repeat similar steps for food_plate_recommendation
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['build', '-t', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/food_recommendation', '--build-arg', 'SERVICE_NAME=food_plate_recommendation', '-f', 'Dockerfile', '.']
+
+  - name: 'gcr.io/cloud-builders/docker'
+    args: ['push', '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/food_recommendation']
+
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - 'food-recommendation'
+      - '--image=${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/food_recommendation'
+      - '--region=${_REGION}'
+      - '--platform=managed'
+      - '--set-env-vars=MONGODB_URL=${_MONGODB_URL},DATABASE_NAME=${_DATABASE_NAME},GROQ_API_KEY=${_GROQ_API_KEY}'
+
+substitutions:
+  _REGION: us-central1
+  _REPOSITORY: virtual-dietician
+  _MONGODB_URL: mongodb://mongo:27017
+  _DATABASE_NAME: virtual_dietician
+  _SECRET_KEY: ${_SECRET_KEY}
+  _GROQ_API_KEY: ${_GROQ_API_KEY}
+  _USER_MANAGEMENT_URL: https://user-management-url/api/v1
+  _DIET_REQUIREMENTS_URL: https://diet-requirements-url/api/v1
+  _FOOD_RECOMMENDATION_URL: https://food-recommendation-url/api/v1
+  _SPECIAL_NEEDS_URL: https://special-needs-url/api/v1
+
+images:
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/frontend'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/user_management'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/diet_requirements'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/food_recommendation'
+  - '${_REGION}-docker.pkg.dev/${PROJECT_ID}/${_REPOSITORY}/special_needs'
