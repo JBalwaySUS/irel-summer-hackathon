@@ -257,16 +257,18 @@ def get_latest_food_recommendation():
 
 # Feedback functions
 def submit_feedback(food_recommendation_id, feedback_text, feedback_type):
-    if not st.session_state.token:
+    if not st.session_state.token or not st.session_state.user:
         return None
     
-    headers = {"Authorization": f"Bearer {st.session_state.token}"}
-    user_id = st.session_state.user["id"]
     user_data = st.session_state.user
+    
+    # Get the food recommendation to include in request
+    food_recommendation = get_latest_food_recommendation()
     
     data = {
         "user_data": user_data,
         "food_recommendation_id": food_recommendation_id,
+        "food_recommendation": food_recommendation,  # Include full recommendation data
         "feedback_text": feedback_text,
         "feedback_type": feedback_type
     }
@@ -275,9 +277,8 @@ def submit_feedback(food_recommendation_id, feedback_text, feedback_type):
         with st.spinner("Processing feedback..."):
             # Call the special needs service directly for feedback
             response = requests.post(
-                f"{SPECIAL_NEEDS_URL}/feedback",
-                json=data,
-                headers=headers
+                f"{SPECIAL_NEEDS_URL}/api/v1/feedback",
+                json=data
             )
             if response.status_code == 200:
                 return response.json()
@@ -289,17 +290,15 @@ def submit_feedback(food_recommendation_id, feedback_text, feedback_type):
         return None
 
 def get_user_feedbacks():
-    if not st.session_state.token:
+    if not st.session_state.user:
         return None
     
-    headers = {"Authorization": f"Bearer {st.session_state.token}"}
     user_id = st.session_state.user["id"]
     
     try:
         # Call the special needs service directly for user feedbacks
         response = requests.get(
-            f"{SPECIAL_NEEDS_URL}/feedback/user/{user_id}",
-            headers=headers
+            f"{SPECIAL_NEEDS_URL}/feedback/user/{user_id}"
         )
         if response.status_code == 200:
             return response.json()

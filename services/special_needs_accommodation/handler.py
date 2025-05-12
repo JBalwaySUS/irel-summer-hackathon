@@ -5,7 +5,7 @@ from datetime import datetime
 from typing import Dict, Any, Optional
 sys.path.append(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 from services.shared.llm_client import LLMClient
-from services.shared.database import get_feedback_collection, get_special_needs_collection, get_food_recommendation_collection
+from services.shared.database import get_feedback_collection, get_special_needs_collection
 from bson import ObjectId
 from .models import UserFeedback, FeedbackAnalysis, AnalysisStatus
 
@@ -28,7 +28,7 @@ class SpecialNeedsHandler:
         # Return the ID of the inserted document
         return str(result.inserted_id)
     
-    async def analyze_feedback(self, feedback_id: str) -> FeedbackAnalysis:
+    async def analyze_feedback(self, feedback_id: str, food_recommendation: Dict = None, user_profile: Dict = None) -> FeedbackAnalysis:
         """
         Analyze user feedback to identify potential dietary restrictions or health concerns
         """
@@ -57,31 +57,15 @@ class SpecialNeedsHandler:
                     recommendation="No concerns identified as feedback was positive."
                 )
             
-            # Get the food recommendation related to the feedback
-            food_recommendation_collection = await get_food_recommendation_collection()
-            food_recommendation = await food_recommendation_collection.find_one(
-                {"_id": ObjectId(feedback["food_recommendation_id"])}
-            )
-            
+            # If food_recommendation wasn't passed, we'll use a placeholder
             if not food_recommendation:
-                return FeedbackAnalysis(
-                    feedback_id=feedback_id,
-                    created_at=datetime.utcnow(),
-                    status=AnalysisStatus.FAILED,
-                    error_message="Related food recommendation not found"
-                )
+                food_recommendation = {
+                    "meal_plans": {}
+                }
             
-            # Get user profile
-            user_collection = await get_user_collection()
-            user = await user_collection.find_one({"_id": ObjectId(feedback["user_id"])})
-            
-            if not user:
-                return FeedbackAnalysis(
-                    feedback_id=feedback_id,
-                    created_at=datetime.utcnow(),
-                    status=AnalysisStatus.FAILED,
-                    error_message="User not found"
-                )
+            # If user_profile wasn't passed, we'll use a placeholder
+            if not user_profile:
+                user_profile = {}
             
             # Create system prompt
             system_prompt = """
@@ -120,28 +104,28 @@ The feedback is about the following food recommendation:
             # Add some meal plan details to the prompt if available
             if "meal_plans" in food_recommendation and food_recommendation["meal_plans"]:
                 days = list(food_recommendation["meal_plans"].keys())
-                first_day = days[0]  # Just include the first day to keep the prompt shorter
-                
-                user_prompt += f"Sample meals from {first_day.capitalize()} in the meal plan:\n"
-                
-                for meal in food_recommendation["meal_plans"][first_day]["meals"]:
-                    user_prompt += f"\n{meal['meal_type'].upper()}:\n"
-                    for item in meal["food_items"]:
-                        user_prompt += f"- {item['name']} ({item['quantity']})\n"
+                if days:
+                    first_day = days[0]  # Just include the first day to keep the prompt shorter
+                    
+                    user_prompt += f"Sample meals from {first_day.capitalize()} in the meal plan:\n"
+                    
+                    for meal in food_recommendation["meal_plans"][first_day].get("meals", []):
+                        user_prompt += f"\n{meal['meal_type'].upper()}:\n"
+                        for item in meal.get("food_items", []):
+                            user_prompt += f"- {item['name']} ({item['quantity']})\n"
             
             # Add user profile information if available
-            if "profile" in user:
-                profile = user["profile"]
+            if user_profile:
                 user_prompt += "\nUser profile information:\n"
                 
-                if "allergies" in profile and profile["allergies"]:
-                    user_prompt += f"- Known allergies: {', '.join(profile['allergies'])}\n"
+                if "allergies" in user_profile and user_profile["allergies"]:
+                    user_prompt += f"- Known allergies: {', '.join(user_profile['allergies'])}\n"
                 
-                if "dietary_restrictions" in profile and profile["dietary_restrictions"]:
-                    user_prompt += f"- Known dietary restrictions: {', '.join(profile['dietary_restrictions'])}\n"
+                if "dietary_restrictions" in user_profile and user_profile["dietary_restrictions"]:
+                    user_prompt += f"- Known dietary restrictions: {', '.join(user_profile['dietary_restrictions'])}\n"
                 
-                if "medical_conditions" in profile and profile["medical_conditions"]:
-                    user_prompt += f"- Medical conditions: {', '.join(profile['medical_conditions'])}\n"
+                if "medical_conditions" in user_profile and user_profile["medical_conditions"]:
+                    user_prompt += f"- Medical conditions: {', '.join(user_profile['medical_conditions'])}\n"
             
             # Call LLM API to analyze feedback
             llm_response = await self.llm_client.generate_response(
@@ -160,7 +144,24 @@ The feedback is about the following food recommendation:
             
             # Parse the JSON response
             try:
-                analysis_data = json.loads(llm_response)
+                # Clean the LLM response to remove Markdown code block formatting
+                cleaned_response = llm_response
+                
+                # Remove opening code block markers (```json, ```, etc.)
+                if "```" in cleaned_response:
+                    # Find the first occurrence of an actual JSON character after the opening ```
+                    start_index = cleaned_response.find("{")
+                    if start_index != -1:
+                        cleaned_response = cleaned_response[start_index:]
+                
+                # Remove closing code block markers (```)
+                if "```" in cleaned_response:
+                    end_index = cleaned_response.rfind("```")
+                    if end_index != -1:
+                        cleaned_response = cleaned_response[:end_index].strip()
+                
+                # Parse the cleaned JSON
+                analysis_data = json.loads(cleaned_response)
                 
                 # Create and return the feedback analysis object
                 return FeedbackAnalysis(
@@ -275,7 +276,7 @@ The feedback is about the following food recommendation:
             
             return feedbacks
         
-        return None
+        return []
     
     async def generate_plan_from_data(self, user_profile: Dict[str, Any], food_recommendation: Dict[str, Any], user_id: Optional[str] = None):
         """
@@ -361,7 +362,24 @@ For each meal that needs to be adjusted, provide:
             
             # Parse the JSON response
             try:
-                special_needs_data = json.loads(llm_response)
+                # Clean the LLM response to remove Markdown code block formatting
+                cleaned_response = llm_response
+                
+                # Remove opening code block markers (```json, ```, etc.)
+                if "```" in cleaned_response:
+                    # Find the first occurrence of an actual JSON character after the opening ```
+                    start_index = cleaned_response.find("{")
+                    if start_index != -1:
+                        cleaned_response = cleaned_response[start_index:]
+                
+                # Remove closing code block markers (```)
+                if "```" in cleaned_response:
+                    end_index = cleaned_response.rfind("```")
+                    if end_index != -1:
+                        cleaned_response = cleaned_response[:end_index].strip()
+                
+                # Parse the cleaned JSON 
+                special_needs_data = json.loads(cleaned_response)
                 
                 # Create and return the special needs plan object
                 return {
