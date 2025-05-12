@@ -7,6 +7,7 @@ ENV PYTHONUNBUFFERED=1
 # PORT is an environment variable that Cloud Run will set (default 8080).
 # Uvicorn will listen on this port.
 ENV PORT=8080
+ENV PYTHONPATH=/app
 
 WORKDIR /app
 
